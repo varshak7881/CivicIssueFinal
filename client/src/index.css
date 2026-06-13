@@ -810,3 +810,15 @@ body {
   .hero         { flex-direction: column; }
   .hero-title   { font-size: 22px; }
 }
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 10px;
+  }
+
+  .nav-brand {
+    width: 100%;
+  }
+}
