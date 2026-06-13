@@ -13,17 +13,17 @@ export default function ReportIssue() {
     lat: '',
     lng: ''
   });
-  const [image, setImage]     = useState(null);
-  const [msg, setMsg]         = useState('');
-  const [error, setError]     = useState('');
-  const [loading, setLoading] = useState(false);
+  const [image, setImage]         = useState(null);
+  const [msg, setMsg]             = useState('');
+  const [error, setError]         = useState('');
+  const [loading, setLoading]     = useState(false);
   const [gpsStatus, setGpsStatus] = useState('');
   const navigate = useNavigate();
 
   // Auto-capture GPS when page loads
   useEffect(() => {
     if (navigator.geolocation) {
-      setGpsStatus('Capturing your location...');
+      setGpsStatus('loading');
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           setForm(f => ({
@@ -57,12 +57,9 @@ export default function ReportIssue() {
     data.append('description', form.description);
     data.append('category',    form.category);
     data.append('location',    form.location);
-
-    // Send GPS if captured
     if (form.lat) data.append('lat', form.lat);
     if (form.lng) data.append('lng', form.lng);
-
-    if (image) data.append('image', image);
+    if (image)    data.append('image', image);
 
     try {
       setLoading(true);
@@ -148,17 +145,17 @@ export default function ReportIssue() {
               onChange={e => setForm({ ...form, location: e.target.value })}
             />
 
-            {/* GPS status shown below location input */}
+            {/* GPS status below location input */}
             <div style={{ fontSize: 12, marginTop: 6 }}>
+              {gpsStatus === 'loading' && (
+                <span style={{ color: '#92400E' }}>
+                  ⏳ Capturing your GPS location...
+                </span>
+              )}
               {gpsStatus === 'captured' && (
                 <span style={{ color: '#065F46', fontWeight: 600 }}>
                   ✅ GPS captured: {Number(form.lat).toFixed(4)}, {Number(form.lng).toFixed(4)}
                   &nbsp;— your location will be verified by the authority
-                </span>
-              )}
-              {gpsStatus === 'Capturing your location...' && (
-                <span style={{ color: '#92400E' }}>
-                  ⏳ Capturing your GPS location...
                 </span>
               )}
               {gpsStatus === 'unavailable' && (
@@ -194,15 +191,31 @@ export default function ReportIssue() {
                 </>
               )}
             </div>
-            {/* On mobile this opens camera directly, not gallery */}
-           <input
-          id="imgInput"
-          type="file"
-          accept="image/*"
-          capture="environment"   // ← this forces rear camera on mobile
-          style={{ display: 'none' }}
-          onChange={e => setImage(e.target.files[0])}
-        />
+            <input
+              id="imgInput"
+              type="file"
+              accept="image/*"
+              capture="environment"
+              style={{ display: 'none' }}
+              onChange={e => setImage(e.target.files[0])}
+            />
+          </div>
+
+          {/* Legal warning */}
+          <div style={{
+            background: '#FEF3C7',
+            border: '1px solid #FCD34D',
+            borderRadius: 8,
+            padding: '12px 14px',
+            marginBottom: 12,
+            fontSize: 12,
+            color: '#92400E',
+            lineHeight: 1.6
+          }}>
+            ⚠️ <strong>Important:</strong> Submitting false or misleading reports is
+            a punishable offence under the IT Act 2000. Your GPS location, device
+            information, and account details are recorded with every submission.
+            Repeated false reports will result in permanent account suspension.
           </div>
 
           {/* Submit buttons */}
